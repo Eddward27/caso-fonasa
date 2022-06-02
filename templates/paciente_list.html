@@ -1,0 +1,418 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} {{ nombre_hospital }}{% endblock %}
+{% block content %}
+    <h1>Pacientes {{ nombre_hospital }}</h1>
+    <div>N° de pacientes: {{ count }}</div>
+    <!-- Tabla Pacientes -->
+    <table class="table table-sm table-hover table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">id hospital</th>
+                <th scope="col">nombre</th>
+                <th scope="col">edad</th>
+                <th scope="col">peso</th>
+                <th scope="col">estatura</th>
+                <th scope="col">prioridad</th>
+                <th scope="col">riesgo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paciente in pacientes %}
+            <tr>
+                <th>{{ paciente['id_paciente'] }}</th>
+                <th>{{ paciente['id_hospital'] }}</th>
+                <th>{{ paciente['nombre'] }}</th>
+                <th>{{ paciente['edad'] }}</th>
+                <th>{{ paciente['peso'] }}</th>
+                <th>{{ paciente['estatura'] }}</th>
+                <th>{{ paciente['prioridad'] }}</th>
+                <th>{{ paciente['riesgo'] }}</th>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- Botones Abajo -->
+    <div>
+        <div class="btn-group" role="group" aria-label="Grupo Add">
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#pacienteModal">
+                Ingresar Nuevo Paciente a Base de Datos
+            </button>
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#pendienteModal">
+                Ingresar Paciente a Lista Pendientes
+            </button>
+        </div>
+        <br><br>
+        <div class="btn-group" role="group" aria-label="Grupo Funcionalidades">
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#mayorRiesgoModal">
+                Buscar Paciente con Mayor Riesgo
+            </button>
+            <a href={{ url_for('fumadores_urgentes', id_hospital=idHospital) }} role="button" class="btn btn-info">
+                Listar Pacientes Fumadores Urgentes
+            </a>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#ancianosModal">
+                Paciente más anciano de Lista de Espera
+            </button>
+        </div>
+        <br><br>
+        <div class="btn-group" role="group" aria-label="Grupo Listas">
+            <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#atencionModal">
+                Ver Lista de Atención
+            </button>
+            <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#esperaModal">
+                Ver Lista de Espera
+            </button>
+            <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#pendientesModal">
+                Ver Lista de Pendientes
+            </button>
+        </div>
+        <br><br>
+        <div class="btn-group" role="group" aria-label="Grupo Nav">
+            <a href="javascript:window.location.reload()" role="button" class="btn btn-primary">
+                Refrescar
+            </a>
+            <a href=".." role="button" class="btn btn-secondary">
+                Volver
+            </a>
+        </div>
+    </div>
+    <!-- Modal Paciente Nuevo -->
+    <div class="modal fade" id="pacienteModal" tabindex="-1" role="dialog" aria-labelledby="pacienteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pacienteModalLabel">Ingresar Nuevo Paciente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action = {{ url_for('pacienteNuevo', id_hospital=idHospital) }} method = "POST">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="nombre">Nombre Paciente</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese Nombre del Paciente">
+                        </div>
+                        <div class="form-group">
+                            <label for="edad">Edad</label>
+                            <input type="number" class="form-control" id="edad" name="edad" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="peso">Peso</label>
+                            <input type="number" class="form-control" id="peso" name="peso" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="estatura">Estatura</label>
+                            <input type="number" class="form-control" id="estatura" name="estatura" value="0">
+                        </div>
+                        <div class="form-group" id="ninnoPE" style="display:none;">
+                            <label for="rPesoEstatura">Relación peso-estatura</label>
+                            <input type="number" class="form-control" id="rPesoEstatura" name="rPesoEstatura" value="0">
+                        </div>
+                        <div class="form-group" id="jovenF" style="display:none;">
+                            <label for="fumador">Fumador</label>
+                            <select class="custom-select my-1 mr-sm-2" id="fumador" name="fumador">
+                                <option value="0">No</option>
+                                <option value="1">Si</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="jovenFE" style="display:none;">
+                            <label for="annosFumando">Años Fumando</label>
+                            <input type="number" class="form-control" id="annosFumando" name="annosFumando" value="0">
+                        </div>
+                        <div class="form-group" id="ancianoTD" style="display:none;">
+                            <label for="tieneDieta">Tiene Dieta</label>
+                            <select class="custom-select my-1 mr-sm-2" id="tieneDieta" name="tieneDieta">
+                                <option value="0">No</option>
+                                <option value="1">Si</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="ingresarPendiente" name="ingresarPendiente">
+                            <label class="form-check-label" for="ingresarPendiente">Ingresar a Sala de Pendientes</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Paciente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal Paciente Nuevo -->
+    <!-- Modal Pendiente Nuevo -->
+    <div class="modal fade" id="pendienteModal" tabindex="-1" role="dialog" aria-labelledby="pendienteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pendienteModalLabel">Ingresar Nuevo Paciente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action = {{ url_for('add_pendiente', id_hospital=idHospital) }} method = "POST">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="id_paciente">Id Paciente</label>
+                            <input type="number" class="form-control" id="id_paciente" name="id_paciente" placeholder="Ingrese Id. del Paciente">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Paciente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal Pendiente Nuevo -->
+    <!-- Modal Paciente Mayor Riesgo -->
+    <div class="modal fade" id="mayorRiesgoModal" tabindex="-1" role="dialog" aria-labelledby="mayorRiesgoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mayorRiesgoModalLabel">Mostrar Pacientes con Mayor Riesgo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action = {{ url_for('mayor_riesgo', id_hospital=idHospital) }} method = "POST">
+                    <div class="modal-body">
+                        <div class="form-group">
+                        <label for="id_paciente">ID_paciente: </label>
+                        <input type="number" class="form-control" id="id_paciente" name="id_paciente" value="0">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Buscar pacientes con mayor riesgo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal Paciente Mayor Riesgo -->
+    <!-- Modal Más Ancianos -->
+    <div class="modal fade " id="ancianosModal" tabindex="-1" role="dialog" aria-labelledby="ancianosModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ancianosModalLabel">Paciente(s) más anciano en Lista de Espera</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id. Paciente</th>
+                                <th scope="col">Id. Hospital</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Edad</th>
+                                <th scope="col">Peso</th>
+                                <th scope="col">Estatura</th>
+                                <th scope="col">Tiene Dieta</th>
+                                <th scope="col">Prioridad</th>
+                                <th scope="col">Riesgo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for anciano in ancianos %}
+                                <tr>
+                                    <th scope="row">{{ anciano['id_paciente'] }}</th>
+                                    <td>{{ anciano['id_hospital'] }}</td>
+                                    <td>{{ anciano['nombre'] }}</td>
+                                    <td>{{ anciano['edad'] }}</td>
+                                    <td>{{ anciano['peso'] }}</td>
+                                    <td>{{ anciano['estatura'] }}</td>
+                                    <td>{% if anciano['tieneDieta'] == 0 %}No{% else %}Si{% endif %}</td>
+                                    <td>{{ anciano['prioridad'] }}</td>
+                                    <td>{{ anciano['riesgo'] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal Más Ancianos -->
+    <!-- Modal Lista Atención -->
+    <div class="modal fade " id="atencionModal" tabindex="-1" role="dialog" aria-labelledby="atencionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="atencionModalLabel">Pacientes en Lista de Atención</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id. Paciente</th>
+                                <th scope="col">Id. Hospital</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Edad</th>
+                                <th scope="col">Peso</th>
+                                <th scope="col">Estatura</th>
+                                <th scope="col">Prioridad</th>
+                                <th scope="col">Riesgo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for paciente in session['lista_atencion'][idHospital] %}
+                                <tr>
+                                    <th scope="row">{{ paciente['id_paciente'] }}</th>
+                                    <td>{{ paciente['id_hospital'] }}</td>
+                                    <td>{{ paciente['nombre'] }}</td>
+                                    <td>{{ paciente['edad'] }}</td>
+                                    <td>{{ paciente['peso'] }}</td>
+                                    <td>{{ paciente['estatura'] }}</td>
+                                    <td>{{ paciente['prioridad'] }}</td>
+                                    <td>{{ paciente['riesgo'] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal Lista Atención -->
+    <!-- Modal Lista Espera -->
+    <div class="modal fade " id="esperaModal" tabindex="-1" role="dialog" aria-labelledby="esperaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="esperaModalLabel">Pacientes en Lista de Espera</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id. Paciente</th>
+                                <th scope="col">Id. Hospital</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Edad</th>
+                                <th scope="col">Peso</th>
+                                <th scope="col">Estatura</th>
+                                <th scope="col">Prioridad</th>
+                                <th scope="col">Riesgo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for paciente in session['lista_espera'][idHospital] %}
+                                <tr>
+                                    <th scope="row">{{ paciente['id_paciente'] }}</th>
+                                    <td>{{ paciente['id_hospital'] }}</td>
+                                    <td>{{ paciente['nombre'] }}</td>
+                                    <td>{{ paciente['edad'] }}</td>
+                                    <td>{{ paciente['peso'] }}</td>
+                                    <td>{{ paciente['estatura'] }}</td>
+                                    <td>{{ paciente['prioridad'] }}</td>
+                                    <td>{{ paciente['riesgo'] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal Lista Espera -->
+    <!-- Modal Lista Pendiente -->
+    <div class="modal fade " id="pendientesModal" tabindex="-1" role="dialog" aria-labelledby="pendienteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pendienteModalLabel">Pacientes en Lista de Pendientes</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id. Paciente</th>
+                                <th scope="col">Id. Hospital</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Edad</th>
+                                <th scope="col">Peso</th>
+                                <th scope="col">Estatura</th>
+                                <th scope="col">Prioridad</th>
+                                <th scope="col">Riesgo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for paciente in session['lista_pendiente'][idHospital] %}
+                                <tr>
+                                    <th scope="row">{{ paciente['id_paciente'] }}</th>
+                                    <td>{{ paciente['id_hospital'] }}</td>
+                                    <td>{{ paciente['nombre'] }}</td>
+                                    <td>{{ paciente['edad'] }}</td>
+                                    <td>{{ paciente['peso'] }}</td>
+                                    <td>{{ paciente['estatura'] }}</td>
+                                    <td>{{ paciente['prioridad'] }}</td>
+                                    <td>{{ paciente['riesgo'] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal Lista Pendiente -->
+    <!-- Script Paciente Nuevo -->
+    <script>
+        const input = document.querySelector('#edad');
+        const log = document.getElementById('values');
+
+        input.addEventListener('input', updateValue);
+
+        function updateValue(e) {
+            var nrpe = document.getElementById("ninnoPE");
+            var jf = document.getElementById("jovenF");
+            var jfe = document.getElementById("jovenFE");
+            var atd = document.getElementById("ancianoTD");
+            var edad = e.target.value;
+            if (edad <= 15) {
+                nrpe.style = ""
+            } else {
+                nrpe.style = "display:none;"
+            }
+            if (edad <= 40 && edad >= 16) {
+                jf.style = ""
+                jfe.style = ""
+            } else {
+                jf.style = "display:none;"
+                jfe.style = "display:none;"
+            }
+            if (edad >= 41) {
+                atd.style = ""
+            } else {
+                atd.style = "display:none;"
+            }
+        }
+    </script>
+    <!--- /Script Paciente Nuevo -->
+{% endblock %}

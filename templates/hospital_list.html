@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+    <!--  -->
+    <h1>Hospitales:</h1>
+    <div>N° de Hospitales: {{ count }}</div>
+    <!-- Tabla Hospitales -->
+    <table class="table table-sm table-hover table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nombre Hospital</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hospital in hospitales %}
+            <tr>
+                <th scope="row">{{ hospital['id_hospital'] }}</th>
+                <th scope="row"><a href="{{ url_for('consulta_list', id_hospital=hospital['id_hospital']) }}">{{ hospital['nombre_hospital'] }}</a></th>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- Botones Abajo -->
+    <div>
+        <div class="btn-group" role="group" aria-label="Grupo Add">
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#hospitalModal">
+                Ingresar Nuevo Hospital
+            </button>
+        </div>
+        <br><br>
+        <div class="btn-group" role="group" aria-label="Grupo Nav">
+            <a href="javascript:window.location.reload()" role="button" class="btn btn-primary">
+                Refrescar
+            </a>
+            <a href="../" role="button" class="btn btn-secondary">
+                Volver
+            </a>
+        </div>
+    </div>
+    <!-- Modal Hospital Nuevo -->
+    <div class="modal fade" id="hospitalModal" tabindex="-1" role="dialog" aria-labelledby="hospitalModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="hospitalModalLabel">Ingresar Nuevo Hospital</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action = {{ url_for('hospital_add') }} method = "POST">
+                    <div class="modal-body">
+                        <div class="form-group">
+                        <label for="nombre_hospital">Nombre Hospital</label>
+                        <input type="text" class="form-control" id="nombre_hospital" name="nombre_hospital" placeholder="Ingrese Nombre del Hospital">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Hospital</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal Hospital Nuevo -->
+{% endblock %}

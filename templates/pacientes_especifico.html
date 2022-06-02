@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+    <h1>{{ caso }}: {{ count }}</h1>
+    <table class="table table-sm table-hover table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">id hospital</th>
+                <th scope="col">nombre</th>
+                <th scope="col">edad</th>
+                <th scope="col">peso</th>
+                <th scope="col">estatura</th>
+                <th scope="col">prioridad</th>
+                <th scope="col">riesgo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paciente in pacientes %}
+            <tr>
+                <th>{{ paciente['id_paciente'] }}</th>
+                <th>{{ paciente['id_hospital'] }}</th>
+                <th>{{ paciente['nombre'] }}</th>
+                <th>{{ paciente['edad'] }}</th>
+                <th>{{ paciente['peso'] }}</th>
+                <th>{{ paciente['estatura'] }}</th>
+                <th>{{ paciente['prioridad'] }}</th>
+                <th>{{ paciente['riesgo'] }}</th>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- Botones Abajo -->
+    <div>
+        <a href="javascript:window.location.reload()" role="button" class="btn btn-primary">
+            Refrescar
+        </a>
+        <a href="{{ url_for('paciente_list', id_hospital=idHospital) }}" role="button" class="btn btn-secondary">
+            Volver
+        </a>
+    </div>
+{% endblock %}
