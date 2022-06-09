@@ -61,7 +61,6 @@ def liberar_consultas(consultas, lista_espera, lista_pendiente, lista_atencion):
     # Libera todas las consultas ocupadas
     # Tener en cuenta que se atienden a los pacientes en lista de espera
     mydb = db.get_db()
-    # consultasUpdate = db.liberar_consulta(mydb, consultas)
     db.liberar_consulta(mydb, consultas)
     lista_atencion.clear()
     lEspera, lPendiente, lAtencion = atender_paciente(consultas, lista_espera, lista_pendiente, lista_atencion)
@@ -83,8 +82,10 @@ def consulta_mas_pacientes_atendidos(mydb, id_hospital=-1):
     # Muestra la consulta que más pacientes haya atendido hasta el momento
     consultas = db.get_consultas(mydb, id_hospital)
     consultas.sort(reverse=True, key=lambda consulta: consulta['cantPacientes'])
-    max_pacientes = consultas[0]['cantPacientes']
     consultas_mas_pacientes = []
+    if len(consultas) == 0:
+        return consultas_mas_pacientes
+    max_pacientes = consultas[0]['cantPacientes']
     for consulta in consultas:
         if max_pacientes != consulta['cantPacientes']:
             break
